@@ -1,15 +1,25 @@
 import 'package:flutter/material.dart';
 
-import 'main.dart';
+import 'api.dart';
+import 'models.dart';
+import 'styles.dart';
 
-class Login extends StatefulWidget {
-  const Login({Key? key}) : super(key: key);
+class LoginWidget extends StatefulWidget {
+  const LoginWidget({Key? key}) : super(key: key);
 
   @override
-  State<Login> createState() => _LoginState();
+  State<LoginWidget> createState() => _LoginWidgetState();
 }
 
-class _LoginState extends State<Login> {
+class _LoginWidgetState extends State<LoginWidget> {
+  late Future<Login> futureLogin;
+
+  @override
+  void initState() {
+    super.initState();
+    futureLogin = LoginApi.login("username", "password");
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -116,6 +126,19 @@ class _LoginState extends State<Login> {
               ],
             ),
           ),
+          FutureBuilder<Login>(
+            future: futureLogin,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return Text(snapshot.data!.loginId);
+              } else if (snapshot.hasError) {
+                return Text('${snapshot.error}');
+              }
+
+              // By default, show a loading spinner.
+              return const CircularProgressIndicator();
+            },
+          )
         ],
       ),
     );
