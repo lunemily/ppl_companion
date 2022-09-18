@@ -34,26 +34,45 @@ class Login {
       });
 }
 
-abstract class Person {
-  late String loginId;
-  late String displayName;
-}
+abstract class Person {}
 
-class Challenger {
+class Challenger extends Person {
   late String loginId;
   late String displayName;
-  late List<Queue> queuedEntered;
+  late List<Queue> queuesEntered;
   late List<Leader> badgesEarned;
 
   Challenger({
     required this.loginId,
     required this.displayName,
-    required this.queuedEntered,
+    required this.queuesEntered,
     required this.badgesEarned,
   });
+
+  factory Challenger.fromJson(Map<String, dynamic> json) {
+    // Preprocessing
+    List<Queue> queuesEntered = [];
+    List<Leader> badgesEarned = [];
+    json['queuesEntered'].map((queue) {
+      return Queue.fromJson(queue);
+    });
+
+    return Challenger(
+      loginId: json['id'],
+      displayName: json['displayName'],
+      queuesEntered: json['queuesEntered']
+          .map((queue) => Queue.fromJson(queue))
+          .toList()
+          .cast<Queue>(),
+      badgesEarned: json['badgesEarned']
+          .map((leader) => Leader.fromJson(leader))
+          .toList()
+          .cast<Leader>(),
+    );
+  }
 }
 
-class Leader {
+class Leader extends Person {
   late String? loginId;
   late String displayName;
   late String leaderId;
@@ -66,33 +85,53 @@ class Leader {
   late String? bio;
   late String? tagline;
 
-  Leader(
-    this.loginId,
-    this.displayName,
-    this.leaderId,
-    this.badgeName,
-    this.queue,
-    this.onHold,
-    this.wins,
-    this.losses,
-    this.badgesAwarded,
+  Leader({
+    required this.leaderId,
+    required this.displayName,
+    required this.badgeName,
     this.bio,
     this.tagline,
-  );
+  });
+
+  factory Leader.fromJson(Map<String, dynamic> json) {
+    return Leader(
+      leaderId: json['leaderId'],
+      displayName: json['leaderName'],
+      badgeName: json['badgeName'],
+      bio: json['bio'],
+      tagline: json['tagline'],
+    );
+  }
 }
 
 class Hold {
   late String leaderId;
-  late String leaderName;
   late String displayName;
   late String challengerId;
 }
 
 class Queue {
   late String leaderId;
-  late String leaderName;
   late String displayName;
   late String badgeName;
-  late String challengerId;
+  late String? challengerId;
   late int position;
+
+  Queue({
+    required this.displayName,
+    required this.position,
+    required this.leaderId,
+    required this.badgeName,
+    this.challengerId,
+  });
+
+  factory Queue.fromJson(Map<String, dynamic> json) {
+    return Queue(
+      displayName: json['displayName'],
+      position: json['position'],
+      leaderId: json['leaderId'],
+      badgeName: json['badgeName'],
+      challengerId: json['challengerId'],
+    );
+  }
 }

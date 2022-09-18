@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:ppl_companion/utils/models.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -49,6 +50,33 @@ class LoginApi extends ApiBase {
 }
 
 class ChallengerApi extends ApiBase {
-  // static Future<Challenger> getChallenger()
+  static Future<Challenger> getChallenger(String loginId, String token) async {
+    Map<String, String> headers = ApiBase().getHeaders();
 
+    headers.putIfAbsent("Content-Type", () => "application/json");
+    headers.putIfAbsent(
+      "Authorization",
+      () => "Bearer $token",
+    );
+
+    try {
+      final response = await http.get(
+        Uri.parse("${Data.apiBaseUrl}/challenger/$loginId"),
+        headers: headers,
+      );
+
+      if (response.statusCode == 200) {
+        if (kDebugMode) {
+          print(response.body);
+        }
+        Challenger challenger = Challenger.fromJson(jsonDecode(response.body));
+        return challenger;
+      } else {
+        throw Exception('Failed to get challenger');
+      }
+    } on Exception catch (_) {
+      // TODO: Make this throw out a toast message
+      throw Exception(_);
+    }
+  }
 }

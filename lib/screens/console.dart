@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ppl_companion/utils/api.dart';
 import 'package:ppl_companion/utils/models.dart';
 
 class ConsoleWidget extends StatefulWidget {
@@ -12,9 +13,16 @@ class ConsoleWidget extends StatefulWidget {
 class _ConsoleWidgetState extends State<ConsoleWidget> {
   Login login;
   _ConsoleWidgetState(this.login);
+  late Future<Challenger> challenger;
+
+  @override
+  void initState() {
+    super.initState();
+    challenger = ChallengerApi.getChallenger(login.loginId, login.token);
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Text(login.token);
+    return Text(challenger.toString());
   }
 }
