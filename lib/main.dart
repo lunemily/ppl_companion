@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
+import 'package:ppl_companion/screens/home.dart';
+import 'package:ppl_companion/screens/login.dart';
+import 'package:ppl_companion/screens/sidenav.dart';
 
-import 'environment.dart';
-import 'login.dart';
-import 'styles.dart';
+import 'utils/environment.dart';
+import 'utils/styles.dart';
 
 void main() {
   runApp(const MyApp());
@@ -46,18 +48,17 @@ class MyApp extends StatelessWidget {
           appBar: AppBar(
             title: Text(Data.pplTitle),
             toolbarHeight: 64,
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.more_vert_outlined),
-                onPressed: () {},
-                tooltip: 'About',
-              ),
-            ],
           ),
           backgroundColor: Colors.transparent,
-          body: LoginWidget(),
+          drawer: const Sidenav(),
+          body: const HomeWidget(),
         ),
       ),
+      initialRoute: '/',
+      routes: {
+        // When navigating to the "/second" route, build the SecondScreen widget.
+        '/login': (context) => const LoginWidget(),
+      },
     );
   }
 }

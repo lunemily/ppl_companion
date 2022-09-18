@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:ppl_companion/utils/api.dart';
 
-import 'api.dart';
-import 'models.dart';
-import 'styles.dart';
+import '../utils/styles.dart';
 
 class LoginWidget extends StatefulWidget {
   const LoginWidget({Key? key}) : super(key: key);
@@ -12,12 +11,13 @@ class LoginWidget extends StatefulWidget {
 }
 
 class _LoginWidgetState extends State<LoginWidget> {
-  late Future<Login> futureLogin;
+  late Future<bool> futureLogin;
+  TextEditingController nameController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    futureLogin = LoginApi.login("username", "password");
   }
 
   @override
@@ -25,11 +25,18 @@ class _LoginWidgetState extends State<LoginWidget> {
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: LayoutBuilder(
-        builder: (BuildContext context, BoxConstraints constraints) {
+        builder: (
+          BuildContext context,
+          BoxConstraints constraints,
+        ) {
           if (constraints.maxWidth > 400) {
-            return _buildForDesktop(context);
+            return _buildForDesktop(
+              context,
+            );
           } else {
-            return _buildForMobile(context);
+            return _buildForMobile(
+              context,
+            );
           }
         },
       ),
@@ -71,24 +78,26 @@ class _LoginWidgetState extends State<LoginWidget> {
               ),
             ),
           ),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
             child: TextField(
-              decoration: InputDecoration(
+              controller: nameController,
+              decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: 'Username',
-                hintText: 'ashketchum96',
+                hintText: 'ashketchum',
               ),
             ),
           ),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
             child: TextField(
               obscureText: true,
-              decoration: InputDecoration(
+              controller: passwordController,
+              decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: 'Password',
-                hintText: 'Pikachu',
+                hintText: 'Pikachu96',
               ),
             ),
           ),
@@ -96,7 +105,12 @@ class _LoginWidgetState extends State<LoginWidget> {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
             child: TextButton(
               style: Styles.flatButtonStyle,
-              onPressed: () {},
+              onPressed: () {
+                login(nameController.text, passwordController.text, () {
+                  Navigator.pushNamedAndRemoveUntil(
+                      context, '/', (route) => false);
+                });
+              },
               child: Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
@@ -126,21 +140,14 @@ class _LoginWidgetState extends State<LoginWidget> {
               ],
             ),
           ),
-          FutureBuilder<Login>(
-            future: futureLogin,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return Text(snapshot.data!.loginId);
-              } else if (snapshot.hasError) {
-                return Text('${snapshot.error}');
-              }
-
-              // By default, show a loading spinner.
-              return const CircularProgressIndicator();
-            },
-          )
         ],
       ),
     );
+  }
+
+  Future<void> login(
+      String username, String password, VoidCallback onSuccess) async {
+    await LoginApi.login(username, password);
+    onSuccess.call();
   }
 }

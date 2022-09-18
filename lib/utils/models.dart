@@ -1,3 +1,9 @@
+import 'dart:convert';
+
+enum Prefs {
+  login,
+}
+
 class Login {
   final String loginId;
   final String token;
@@ -16,7 +22,14 @@ class Login {
       loginId: json['loginId'],
       token: json['token'],
       isLeader: json['isLeader'],
-      leaderId: json['leaderId'] == null ? json['leaderId'] : '',
+      leaderId: json['isLeader'] ? json['leaderId'] : '',
     );
   }
+
+  String toJsonString() => jsonEncode({
+        'loginId': loginId,
+        'token': token,
+        'isLeader': isLeader,
+        'leaderId': leaderId
+      });
 }
