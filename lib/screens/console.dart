@@ -23,6 +23,76 @@ class _ConsoleWidgetState extends State<ConsoleWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Text(challenger.toString());
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: LayoutBuilder(
+        builder: (
+          BuildContext context,
+          BoxConstraints constraints,
+        ) {
+          if (constraints.maxWidth > 600) {
+            return _buildForDesktop(
+              context,
+            );
+          } else {
+            return _buildForMobile(
+              context,
+            );
+          }
+        },
+      ),
+    );
+  }
+
+  Widget _buildForDesktop(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        SizedBox(
+          width: 400,
+          child: _buildForMobile(context),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildForMobile(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _nameCard(context),
+      ],
+    );
+  }
+
+  Widget _nameCard(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 16),
+          child: Center(
+            child: FutureBuilder<Challenger>(
+              future: challenger,
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return Center(
+                    child: Text(
+                      "${snapshot.data!.displayName}'s Trainer Card",
+                      style: Theme.of(context).textTheme.headlineSmall,
+                    ),
+                  );
+                } else if (snapshot.hasError) {
+                  return Text('${snapshot.error}');
+                }
+                // By default, show a loading spinner.
+                return const CircularProgressIndicator();
+              },
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }
