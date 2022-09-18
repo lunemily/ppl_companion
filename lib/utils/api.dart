@@ -14,13 +14,13 @@ class ApiBase {
 
 class LoginApi extends ApiBase {
   static Future<bool> login(String username, String password) async {
-    Map<String, String> loginHeaders = ApiBase().getHeaders();
+    Map<String, String> headers = ApiBase().getHeaders();
 
-    // loginHeaders.putIfAbsent("Content-Type", () => "application/json");
+    // headers.putIfAbsent("Content-Type", () => "application/json");
 
     Codec<String, String> stringToBase64 = utf8.fuse(base64);
     String encodedCredentials = stringToBase64.encode("$username:$password");
-    loginHeaders.putIfAbsent(
+    headers.putIfAbsent(
       "Authorization",
       () => "Basic $encodedCredentials",
     );
@@ -28,7 +28,7 @@ class LoginApi extends ApiBase {
     try {
       final response = await http.post(
         Uri.parse("${Data.apiBaseUrl}/login"),
-        headers: loginHeaders,
+        headers: headers,
       );
 
       if (response.statusCode == 200) {
@@ -42,7 +42,13 @@ class LoginApi extends ApiBase {
         throw Exception('Failed to login');
       }
     } on Exception catch (_) {
+      // TODO: Make this throw out a toast message
       throw Exception(_);
     }
   }
+}
+
+class ChallengerApi extends ApiBase {
+  // static Future<Challenger> getChallenger()
+
 }
