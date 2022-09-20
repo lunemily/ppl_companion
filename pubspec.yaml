@@ -34,6 +34,7 @@ dependencies:
   http: 0.13.5
   shared_preferences:
   logging:
+  flutter_expandable_fab: ^1.5.1
 
 
   # The following adds the Cupertino Icons font to your application.

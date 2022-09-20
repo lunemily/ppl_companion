@@ -59,6 +59,7 @@ class MyApp extends StatelessWidget {
         // When navigating to the "/second" route, build the SecondScreen widget.
         '/login': (context) => const LoginWidget(),
       },
+      debugShowCheckedModeBanner: false,
     );
   }
 }

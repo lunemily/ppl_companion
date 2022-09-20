@@ -35,6 +35,16 @@ class Styles {
       borderRadius: BorderRadius.all(Radius.circular(4.0)),
     ),
   );
+
+  static ButtonStyle strokedButtonStyle = TextButton.styleFrom(
+    foregroundColor: Styles.primaryColor,
+    backgroundColor: Colors.white,
+    minimumSize: const Size.fromHeight(36),
+    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.all(Radius.circular(4.0)),
+    ),
+  );
   static TextStyle flatButtonTextStyle = const TextStyle(
     fontFamily: 'Roboto',
     color: Colors.white,
