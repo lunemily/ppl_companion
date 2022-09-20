@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:ppl_companion/screens/trainer_card.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../main.dart';
 import '../utils/models.dart';
 
 class Sidenav extends StatefulWidget {
@@ -21,10 +20,7 @@ class _SidenavState extends State<Sidenav> {
           ListTile(
             leading: const Icon(Icons.home),
             title: const Text('Home'),
-            onTap: () => _navPush(
-              context,
-              const MyApp(),
-            ),
+            onTap: () => goHome(context),
           ),
           ListTile(
             leading: const Icon(Icons.chrome_reader_mode),
@@ -33,6 +29,21 @@ class _SidenavState extends State<Sidenav> {
               context,
               const TrainerCard(),
             ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.videogame_asset),
+            title: const Text('How to Challenge'),
+            onTap: () => goHome(context),
+          ),
+          ListTile(
+            leading: const Icon(Icons.description),
+            title: const Text('PPL Rules'),
+            onTap: () => goHome(context),
+          ),
+          ListTile(
+            leading: const Icon(Icons.stars),
+            title: const Text('Prize Pools'),
+            onTap: () => goHome(context),
           ),
           ListTile(
             leading: const Icon(Icons.logout),
@@ -59,5 +70,13 @@ class _SidenavState extends State<Sidenav> {
     prefs.remove(Prefs.login.name);
     if (!mounted) return;
     Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
+  }
+
+  void goHome(BuildContext context) {
+    Navigator.pushNamedAndRemoveUntil(
+      context,
+      '/',
+      (route) => false,
+    );
   }
 }

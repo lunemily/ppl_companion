@@ -16,7 +16,6 @@ class HomeWidget extends StatefulWidget {
 
 class _HomeWidgetState extends State<HomeWidget> {
   late Future<bool> authenticated;
-  late Future<Login> login;
 
   @override
   void initState() {
@@ -42,22 +41,8 @@ class _HomeWidgetState extends State<HomeWidget> {
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           if (snapshot.data!) {
-            // Confirmed authenticated. Get the information and pass it to the console. We don't want to manage that API call here.
-            login = getLogin();
-            return FutureBuilder<Login>(
-              future: login,
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  return ConsoleWidget(
-                    login: snapshot.data!,
-                  );
-                } else if (snapshot.hasError) {
-                  return Text('${snapshot.error}');
-                }
-                // By default, show a loading spinner.
-                return const CircularProgressIndicator();
-              },
-            );
+            // Confirmed authenticated.
+            return const ConsoleWidget();
           } else {
             return const LoginWidget();
           }

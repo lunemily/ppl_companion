@@ -1,32 +1,52 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
 import 'package:ppl_companion/utils/api.dart';
 import 'package:ppl_companion/utils/models.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../utils/styles.dart';
 
 class ConsoleWidget extends StatefulWidget {
-  final Login login;
-  const ConsoleWidget({Key? key, required this.login}) : super(key: key);
+  const ConsoleWidget({Key? key}) : super(key: key);
 
   @override
-  State<ConsoleWidget> createState() => _ConsoleWidgetState(login);
+  State<ConsoleWidget> createState() => _ConsoleWidgetState();
 }
 
 class _ConsoleWidgetState extends State<ConsoleWidget> {
-  Login login;
-  _ConsoleWidgetState(this.login);
+  late Future<Login> login;
   late Future<Challenger> challenger;
+  late String loginId;
   TextEditingController nameController = TextEditingController();
 
   @override
-  void initState() {
+  initState() {
+    login = getLogin();
     super.initState();
-    challenger = ChallengerApi.getChallenger(login.loginId);
   }
 
   @override
   Widget build(BuildContext context) {
+    // First get the login "cookie"
+    return FutureBuilder<Login>(
+      future: login,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          loginId = snapshot.data!.loginId;
+          // Now fetch the challenger data
+          challenger = ChallengerApi.getChallenger(loginId);
+          return buildConsole(context);
+        } else if (snapshot.hasError) {
+          return Text('${snapshot.error}');
+        }
+        return const CircularProgressIndicator();
+      },
+    );
+  }
+
+  Widget buildConsole(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: LayoutBuilder(
@@ -91,6 +111,7 @@ class _ConsoleWidgetState extends State<ConsoleWidget> {
     );
   }
 
+// challenger = ChallengerApi.getChallenger(login.loginId);
   Widget _nameCard(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
@@ -128,7 +149,11 @@ class _ConsoleWidgetState extends State<ConsoleWidget> {
         return AlertDialog(
           content: Wrap(
             children: [
-              const Text('Change your display name here:'),
+              Text(
+                'Update your display name?',
+                style: Theme.of(context).textTheme.headlineSmall,
+                textAlign: TextAlign.center,
+              ),
               Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
@@ -149,7 +174,7 @@ class _ConsoleWidgetState extends State<ConsoleWidget> {
               onPressed: () {
                 editName(
                   nameController.text,
-                  login.loginId,
+                  loginId,
                   () => goHome(context),
                   () => actionFailed(context, 'Failed to change name'),
                 );
@@ -165,6 +190,11 @@ class _ConsoleWidgetState extends State<ConsoleWidget> {
         );
       },
     );
+  }
+
+  Future<Login> getLogin() async {
+    final prefs = await SharedPreferences.getInstance();
+    return Login.fromJson(jsonDecode(prefs.getString(Prefs.login.name)!));
   }
 
   Future<void> editName(
