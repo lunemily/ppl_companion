@@ -96,7 +96,8 @@ class Leader extends Person {
   factory Leader.fromJson(Map<String, dynamic> json) {
     return Leader(
       leaderId: json['leaderId'],
-      displayName: json['leaderName'],
+      displayName:
+          json.containsKey('displayName') ? json['displayName'] : json['name'],
       badgeName: json['badgeName'],
       bio: json['bio'],
       tagline: json['tagline'],

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:ppl_companion/utils/models.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -78,6 +79,8 @@ class ChallengerApi extends ApiBase {
         Challenger challenger = Challenger.fromJson(jsonDecode(response.body));
         return challenger;
       } else if (response.statusCode == 403) {
+        final prefs = await SharedPreferences.getInstance();
+        prefs.remove(Prefs.login.name);
         throw BadAuthenticationException('Bad token. Please login again.');
       } else {
         throw Exception('Failed to get challenger');
@@ -113,6 +116,22 @@ class ChallengerApi extends ApiBase {
     } on Exception catch (_) {
       return false;
     }
+  }
+}
+
+class DataApi extends ApiBase {
+  static Future<List<Leader>> getAllLeaders() async {
+    List<Leader> leaders = [];
+
+    String rawLeaders =
+        await rootBundle.loadString('assets/samples/all_leaders.json');
+    Map<String, dynamic> json = jsonDecode(rawLeaders);
+    for (var leaderId in json.keys) {
+      json[leaderId]["leaderId"] = leaderId;
+      leaders.add(Leader.fromJson(json[leaderId]));
+    }
+
+    return leaders;
   }
 }
 

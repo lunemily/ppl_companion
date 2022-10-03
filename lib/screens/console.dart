@@ -130,7 +130,7 @@ class _ConsoleWidgetState extends State<ConsoleWidget> {
                     ),
                   );
                 } else if (snapshot.hasError) {
-                  return Text('${snapshot.error}');
+                  return Text(snapshot.error.toString());
                 }
                 // By default, show a loading spinner.
                 return const CircularProgressIndicator();
